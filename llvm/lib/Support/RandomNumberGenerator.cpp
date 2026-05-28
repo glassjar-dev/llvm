@@ -27,6 +27,9 @@
 #include "Unix/Unix.h"
 #if defined(__wasi__)
 #include <stdlib.h>
+#else
+#include <fcntl.h>
+#include <unistd.h>
 #endif
 #endif
 
