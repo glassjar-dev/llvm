@@ -18,12 +18,8 @@
 #include "Unix.h"
 #include <limits.h>
 #include <stdio.h>
-#if HAVE_SYS_STAT_H || defined(__wasi__)
 #include <sys/stat.h>
-#endif
-#if HAVE_FCNTL_H || defined(__wasi__)
 #include <fcntl.h>
-#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -133,7 +129,7 @@ const file_t kInvalidFile = -1;
     defined(__CYGWIN__) || defined(__DragonFly__) || defined(_AIX) ||          \
     defined(__GNU__) ||                                                        \
     (defined(__sun__) && defined(__svr4__) || defined(__HAIKU__)) ||           \
-    defined(__wasi__)
+    defined(__managarm__)
 static int test_dir(char ret[PATH_MAX], const char *dir, const char *bin) {
   struct stat sb;
   char fullpath[PATH_MAX];
