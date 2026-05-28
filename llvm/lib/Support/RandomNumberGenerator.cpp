@@ -25,6 +25,9 @@
 #include "llvm/Support/Windows/WindowsSupport.h"
 #else
 #include "Unix/Unix.h"
+#if defined(__wasi__)
+#include <stdlib.h>
+#endif
 #endif
 
 using namespace llvm;
@@ -78,6 +81,10 @@ std::error_code llvm::getRandomBytes(void *Buffer, size_t Size) {
   }
   return std::error_code(GetLastError(), std::system_category());
 #else
+#if defined(__wasi__)
+  arc4random_buf(Buffer, Size);
+  return std::error_code();
+#else
   int Fd = open("/dev/urandom", O_RDONLY);
   if (Fd != -1) {
     std::error_code Ret;
@@ -92,5 +99,6 @@ std::error_code llvm::getRandomBytes(void *Buffer, size_t Size) {
     return Ret;
   }
   return errnoAsErrorCode();
+#endif // __wasi__
 #endif
 }

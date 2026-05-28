@@ -97,8 +97,10 @@ void sys::printArg(raw_ostream &OS, StringRef Arg, bool Quote) {
 }
 
 // Include the platform-specific parts of this class.
-#ifdef LLVM_ON_UNIX
+#if defined(LLVM_ON_UNIX) && !defined(__wasi__) && !defined(__wasm__)
 #include "Unix/Program.inc"
+#elif defined(__wasi__) || defined(__wasm__)
+#include "Unix/WasiProgram.inc"
 #endif
 #ifdef _WIN32
 #include "Windows/Program.inc"

@@ -37,6 +37,9 @@ bool areFdsValid(int ReadFD, int WriteFD) {
 JobserverClientImpl::JobserverClientImpl(const JobserverConfig &Config) {
   switch (Config.TheMode) {
   case JobserverConfig::PosixPipe: {
+#if defined(__wasi__)
+    return;
+#else
     // Duplicate the read and write file descriptors.
     int NewReadFD = ::dup(Config.PipeFDs.Read);
     if (NewReadFD < 0)
@@ -62,6 +65,7 @@ JobserverClientImpl::JobserverClientImpl(const JobserverConfig &Config) {
     }
     ReadFD = NewReadFD;
     WriteFD = NewWriteFD;
+#endif // !__wasi__
     break;
   }
   case JobserverConfig::PosixFifo:
