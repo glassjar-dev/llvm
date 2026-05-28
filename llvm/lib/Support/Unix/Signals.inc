@@ -39,6 +39,7 @@
 #include "llvm/Support/ExitCodes.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/FileUtilities.h"
+#include "llvm/Support/IOSandbox.h"
 #include "llvm/Support/Format.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Mutex.h"
@@ -359,7 +360,7 @@ static void RemoveFilesToRemove() {
 
 void sys::CleanupOnSignal(uintptr_t Context) {
   // Let's not interfere with stack trace symbolication and friends.
-  auto BypassSandbox = sandbox::scopedDisable();
+  auto BypassSandbox = sys::sandbox::scopedDisable();
 
   int Sig = (int)Context;
 
@@ -445,7 +446,7 @@ static void InfoSignalHandler(int Sig) {
 
 void sys::RunInterruptHandlers() {
   // Let's not interfere with stack trace symbolication and friends.
-  auto BypassSandbox = sandbox::scopedDisable();
+  auto BypassSandbox = sys::sandbox::scopedDisable();
 
   RemoveFilesToRemove();
 }
