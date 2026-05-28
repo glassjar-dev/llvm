@@ -180,7 +180,7 @@ Expected<ListeningSocket> ListeningSocket::createUnix(StringRef SocketPath,
 }
 
 Expected<std::unique_ptr<raw_socket_stream>>
-ListeningSocket::accept(std::chrono::milliseconds Timeout) {
+ListeningSocket::accept(const std::chrono::milliseconds &Timeout) {
 
   struct pollfd FDs[2];
   FDs[0].events = POLLIN;
