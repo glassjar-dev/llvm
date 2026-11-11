@@ -98,6 +98,10 @@ InputFile *createObjectFile(MemoryBufferRef mb, StringRef archiveName,
   }
 
   assert(magic == file_magic::bitcode);
+#ifdef GLASSJAR_TINY
+  fatal(toString(mb.getBufferIdentifier()) +
+        ": LLVM bitcode (LTO) is not supported by this build of wasm-ld");
+#endif
   return make<BitcodeFile>(mb, archiveName, offsetInArchive, lazy);
 }
 

@@ -286,7 +286,13 @@ public:
   TLSModel::Model getTLSModel(const GlobalValue *GV) const;
 
   /// Returns the optimization level: None, Less, Default, or Aggressive.
+#ifdef GLASSJAR_O0_ONLY
+  // glassjar: this build only compiles at -O0, so the optimizing code
+  // generator passes are unreachable and LTO can drop them.
+  CodeGenOptLevel getOptLevel() const { return CodeGenOptLevel::None; }
+#else
   CodeGenOptLevel getOptLevel() const { return OptLevel; }
+#endif
 
   /// Overrides the optimization level.
   void setOptLevel(CodeGenOptLevel Level) { OptLevel = Level; }

@@ -414,7 +414,14 @@ public:
   /// @{
 
   /// Get the parsed architecture type of this triple.
+#ifdef GLASSJAR_TINY
+  // glassjar: a WebAssembly-only toolchain. Telling the optimizer so lets LTO
+  // drop every other target's code paths (clang targets and builtins, object
+  // formats, ABI lowering) from every switch on the architecture.
+  ArchType getArch() const { return Arch == wasm64 ? wasm64 : wasm32; }
+#else
   ArchType getArch() const { return Arch; }
+#endif
 
   /// get the parsed subarchitecture type for this triple.
   SubArchType getSubArch() const { return SubArch; }
@@ -440,7 +447,11 @@ public:
   LLVM_ABI VersionTuple getEnvironmentVersion() const;
 
   /// Get the object format for this triple.
+#ifdef GLASSJAR_TINY
+  ObjectFormatType getObjectFormat() const { return Wasm; }
+#else
   ObjectFormatType getObjectFormat() const { return ObjectFormat; }
+#endif
 
   /// Parse the version number from the OS name component of the triple, if
   /// present.

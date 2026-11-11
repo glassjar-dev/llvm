@@ -18,6 +18,59 @@ using namespace llvm;
 
 /// initializeCodeGen - Initialize all passes linked into the CodeGen library.
 void llvm::initializeCodeGen(PassRegistry &Registry) {
+#ifdef GLASSJAR_O0_ONLY
+  // glassjar: only the passes the -O0 WebAssembly pipeline schedules (the
+  // "Pass Arguments" line of -mllvm -debug-pass=Structure). Registering a pass
+  // keeps its code alive, so the optimizing passes are left out.
+  initializeAssignmentTrackingAnalysisPass(Registry);
+  initializeAtomicExpandLegacyPass(Registry);
+  initializeCallBrPreparePass(Registry);
+  initializeExpandIRInstsLegacyPassPass(Registry);
+  initializeExpandPostRALegacyPass(Registry);
+  initializeFEntryInserterLegacyPass(Registry);
+  initializeFinalizeISelPass(Registry);
+  initializeFixupStatepointCallerSavedLegacyPass(Registry);
+  initializeGCModuleInfoPass(Registry);
+  initializeIndirectBrExpandLegacyPassPass(Registry);
+  initializeLibcallLoweringInfoWrapperPass(Registry);
+  initializeLiveDebugValuesLegacyPass(Registry);
+  initializeLocalStackSlotPassPass(Registry);
+  initializeLowerGlobalDtorsLegacyPassPass(Registry);
+  initializeLowerIntrinsicsPass(Registry);
+  initializeMachineDominatorTreeWrapperPassPass(Registry);
+  initializeMachineLoopInfoWrapperPassPass(Registry);
+  initializeMachineModuleInfoWrapperPassPass(Registry);
+  initializeMachineOptimizationRemarkEmitterPassPass(Registry);
+  initializeMachineSanitizerBinaryMetadataLegacyPass(Registry);
+  initializePEILegacyPass(Registry);
+  initializePHIEliminationPass(Registry);
+  initializePreISelIntrinsicLoweringLegacyPassPass(Registry);
+  initializeRemoveRedundantDebugValuesLegacyPass(Registry);
+  initializeSafeStackLegacyPassPass(Registry);
+  initializeShadowStackGCLoweringPass(Registry);
+  initializeStackFrameLayoutAnalysisLegacyPass(Registry);
+  initializeStackProtectorPass(Registry);
+  initializeTargetPassConfigPass(Registry);
+  initializeTwoAddressInstructionLegacyPassPass(Registry);
+  initializeUnreachableBlockElimLegacyPassPass(Registry);
+  initializeWasmEHPreparePass(Registry);
+  initializeWinEHPreparePass(Registry);
+  initializeXRayInstrumentationLegacyPass(Registry);
+  // Analyses those passes require, which the full list registered as a side
+  // effect of passes left out here.
+  initializeAssumptionCacheTrackerPass(Registry);
+  initializeExpandReductionsPass(Registry);
+  initializeLazyMachineBlockFrequencyInfoPassPass(Registry);
+  initializeMachineBranchProbabilityInfoWrapperPassPass(Registry);
+  initializeMachineDominanceFrontierPass(Registry);
+  initializePostInlineEntryExitInstrumenterPass(Registry);
+  initializeProfileSummaryInfoWrapperPassPass(Registry);
+  initializeRuntimeLibraryInfoWrapperPass(Registry);
+  initializeScalarizeMaskedMemIntrinLegacyPassPass(Registry);
+  initializeTargetLibraryInfoWrapperPassPass(Registry);
+  initializeTargetTransformInfoWrapperPassPass(Registry);
+  initializeVerifierLegacyPassPass(Registry);
+#else
   initializeAssignmentTrackingAnalysisPass(Registry);
   initializeAtomicExpandLegacyPass(Registry);
   initializeBasicBlockPathCloningPass(Registry);
@@ -149,4 +202,5 @@ void llvm::initializeCodeGen(PassRegistry &Registry) {
   initializeWasmEHPreparePass(Registry);
   initializeWinEHPreparePass(Registry);
   initializeXRayInstrumentationLegacyPass(Registry);
+#endif
 }

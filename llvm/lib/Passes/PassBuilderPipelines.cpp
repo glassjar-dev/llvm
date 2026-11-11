@@ -2318,6 +2318,7 @@ PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
 
   ModulePassManager MPM;
 
+#ifndef GLASSJAR_O0_ONLY // glassjar: no profiling passes in the -O0-only build.
   // Perform pseudo probe instrumentation in O0 mode. This is for the
   // consistency between different build modes. For example, a LTO build can be
   // mixed with an O0 prelink and an O2 postlink. Loading a sample profile in
@@ -2332,6 +2333,7 @@ PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
         /*RunProfileGen=*/(PGOOpt->Action == PGOOptions::IRInstr),
         /*IsCS=*/false, PGOOpt->AtomicCounterUpdate, PGOOpt->ProfileFile,
         PGOOpt->ProfileRemappingFile);
+#endif
 
   // Instrument function entry and exit before all inlining.
   MPM.addPass(createModuleToFunctionPassAdaptor(
@@ -2339,6 +2341,7 @@ PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
 
   invokePipelineStartEPCallbacks(MPM, Level);
 
+#ifndef GLASSJAR_O0_ONLY
   if (PGOOpt && PGOOpt->DebugInfoForProfiling)
     MPM.addPass(createModuleToFunctionPassAdaptor(AddDiscriminatorsPass()));
 
@@ -2354,6 +2357,7 @@ PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
     // RequireAnalysisPass for PSI before subsequent non-module passes.
     MPM.addPass(RequireAnalysisPass<ProfileSummaryAnalysis, Module>());
   }
+#endif
 
   invokePipelineEarlySimplificationEPCallbacks(MPM, Level, Phase);
 
@@ -2364,12 +2368,14 @@ PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
   MPM.addPass(AlwaysInlinerPass(
       /*InsertLifetimeIntrinsics=*/false));
 
+#ifndef GLASSJAR_O0_ONLY
   if (PTO.MergeFunctions)
     MPM.addPass(MergeFunctionsPass());
 
   if (EnableMatrix)
     MPM.addPass(
         createModuleToFunctionPassAdaptor(LowerMatrixIntrinsicsPass(true)));
+#endif
 
   if (!CGSCCOptimizerLateEPCallbacks.empty()) {
     CGSCCPassManager CGPM;

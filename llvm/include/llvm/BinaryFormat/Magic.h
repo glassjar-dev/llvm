@@ -9,6 +9,9 @@
 #ifndef LLVM_BINARYFORMAT_MAGIC_H
 #define LLVM_BINARYFORMAT_MAGIC_H
 
+#ifdef GLASSJAR_TINY
+#include "llvm/ADT/StringRef.h"
+#endif
 #include "llvm/Support/Compiler.h"
 #include <system_error>
 
@@ -73,7 +76,21 @@ private:
 };
 
 /// Identify the type of a binary file based on how magical it is.
+#ifdef GLASSJAR_TINY
+// glassjar: this toolchain reads WebAssembly objects and archives of them.
+// Folding every other format to "unknown" here lets LTO drop their readers.
+LLVM_ABI file_magic identify_magic_any(StringRef magic);
+inline file_magic identify_magic(StringRef magic) {
+  file_magic Type = identify_magic_any(magic);
+  if (Type == file_magic::wasm_object)
+    return file_magic::wasm_object;
+  if (Type == file_magic::archive)
+    return file_magic::archive;
+  return file_magic::unknown;
+}
+#else
 LLVM_ABI file_magic identify_magic(StringRef magic);
+#endif
 
 /// Get and identify \a path's type based on its content.
 ///

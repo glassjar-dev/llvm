@@ -30,7 +30,11 @@ static bool startswith(StringRef Magic, const char (&S)[N]) {
 }
 
 /// Identify the magic in magic.
+#ifdef GLASSJAR_TINY
+file_magic llvm::identify_magic_any(StringRef Magic) {
+#else
 file_magic llvm::identify_magic(StringRef Magic) {
+#endif
   if (Magic.size() < 4)
     return file_magic::unknown;
   switch ((unsigned char)Magic[0]) {

@@ -81,6 +81,9 @@ void SymbolTable::addFile(InputFile *file, StringRef symName) {
 void SymbolTable::compileBitcodeFiles() {
   // Prevent further LTO objects being included
   BitcodeFile::doneLTO = true;
+#ifdef GLASSJAR_TINY
+  return; // glassjar: no LTO; createObjectFile rejects bitcode inputs.
+#endif
 
   // Compile bitcode files and replace bitcode symbols.
   lto.reset(new BitcodeCompiler);
